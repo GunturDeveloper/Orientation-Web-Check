@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #222;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .info {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            font-size: 16px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+
+        .cube {
+            width: 200px;
+            height: 200px;
+            transform-style: preserve-3d;
+            position: relative;
+            transition: transform 0.05s linear;
+            padding:100px;
+            margin-top:200px;
+        }
+
+        .cube div {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border: 2px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .front  { transform: translateZ(100px); background-color: #ff0000; } /* Merah */
+        .back   { transform: rotateY(180deg) translateZ(100px); background-color: #00ff00; } /* Hijau */
+        .left   { transform: rotateY(-90deg) translateZ(100px); background-color: #0000ff; } /* Biru */
+        .right  { transform: rotateY(90deg) translateZ(100px); background-color: #ff00ff; } /* Ungu */
+        .top    { transform: rotateX(90deg) translateZ(100px); background-color: #ff8800; } /* Oranye */
+        .bottom { transform: rotateX(-90deg) translateZ(100px); background-color: #39003b; } /* Kuning */
+    </style>
+</head>
+<body>
+
+    <div class="info">
+        <p>Device: <span id="deviceVal">NaN</span></p>
+        <p>X: <span id="xVal">0</span>°</p>
+        <p>Y: <span id="yVal">0</span>°</p>
+        <p>Z: <span id="zVal">0</span>°</p>
+        <p>FPS: <span id="fpsVal">0</span></p>
+    </div>
+
+    <div class="cube">
+        <div class="front">Front</div>
+        <div class="back">Back</div>
+        <div class="left">Left</div>
+        <div class="right">Right</div>
+        <div class="top">Top</div>
+        <div class="bottom">Bottom</div>
+    </div>
+
+    <script>
+        let device = document.getElementById('deviceVal');
+        let cube = document.querySelector('.cube');
+        let xText = document.getElementById('xVal');
+        let yText = document.getElementById('yVal');
+        let zText = document.getElementById('zVal');
+        let fpsText = document.getElementById('fpsVal');
+
+        let lastFrameTime = performance.now();
+
+        function updateFPS() {
+            let now = performance.now();
+            let deltaTime = now - lastFrameTime;
+            lastFrameTime = now;
+            let fps = 1000 / deltaTime;
+            fpsText.textContent = fps.toFixed(2);
+        }
+
+        if (window.DeviceOrientationEvent) {
+            window.addEventListener('deviceorientation', (event) => {
+                let alpha = event.alpha || 0; // Z (Yaw)
+                let beta = event.beta || 0;   // X (Pitch)
+                let gamma = event.gamma || 0; // Y (Roll)
+
+                cube.style.transform = `rotateX(${beta}deg) rotateY(${gamma}deg) rotateZ(${alpha}deg)`;
+
+                xText.textContent = beta.toFixed(2);
+                yText.textContent = gamma.toFixed(2);
+                zText.textContent = alpha.toFixed(2);
+
+                updateFPS();
+            });
+        } else {
+            alert("Device orientation is not supported on this device.");
+        }
+        function getDeviceName() {
+    let userAgent = navigator.userAgent;
+    let match = userAgent.match(/([^)]+)/);
+    return match ? match[1] : "Tidak Diketahui";
+}
+
+device.textContent = getDeviceName();
+    </script>
+
+</body>
+</html>
